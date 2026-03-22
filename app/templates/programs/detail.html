@@ -43,7 +43,11 @@ content %}
                 <tr>
                     <td>{{ pc.sort_order }}</td>
                     <td><strong>{{ pc.course.course_code }}</strong></td>
-                    <td>{{ pc.course.name }}</td>
+                    <td>
+                        <a href="#" class="course-link" data-course-id="{{ pc.course.id }}" data-course-name="{{ pc.course.name }}" data-course-code="{{ pc.course.course_code }}" data-course-credits="{{ pc.course.credits }}" data-course-category="{{ pc.course.category }}" data-course-required="{{ pc.course.is_required }}" data-course-description="{{ pc.course.description }}">
+                            {{ pc.course.name }}
+                        </a>
+                    </td>
                     <td class="text-center">{{ pc.course.credits }}</td>
                     <td>{{ pc.course.category }}</td>
                     <td>
@@ -68,4 +72,76 @@ pc.course.credits %} {% endfor %} {% endfor %}
     Chưa có học phần nào trong chương trình này.
     <a href="{{ url_for('program_courses.manage', program_id=program.id) }}">Thêm học phần ngay</a>.
 </div>
-{% endif %} {% endblock %}
+{% endif %} 
+
+<!-- Modal Chi tiết Học phần -->
+<div class="modal fade" id="courseDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="courseDetailTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td class="fw-bold">Mã HP:</td>
+                        <td id="courseDetailCode"></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Tên:</td>
+                        <td id="courseDetailName"></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Tín chỉ:</td>
+                        <td id="courseDetailCredits"></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Loại:</td>
+                        <td id="courseDetailCategory"></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Bắt buộc:</td>
+                        <td id="courseDetailRequired"></td>
+                    </tr>
+                </table>
+                <div class="mt-3">
+                    <h6><i class="bi bi-file-text"></i> Mô tả</h6>
+                    <p id="courseDetailDescription"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.course-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const courseId = link.dataset.courseId;
+        const courseName = link.dataset.courseName;
+        const courseCode = link.dataset.courseCode;
+        const courseCredits = link.dataset.courseCredits;
+        const courseCategory = link.dataset.courseCategory;
+        const courseRequired = link.dataset.courseRequired === 'True';
+        const courseDescription = link.dataset.courseDescription;
+
+        document.getElementById('courseDetailTitle').textContent = courseName;
+        document.getElementById('courseDetailCode').textContent = courseCode;
+        document.getElementById('courseDetailName').textContent = courseName;
+        document.getElementById('courseDetailCredits').textContent = courseCredits;
+        document.getElementById('courseDetailCategory').textContent = courseCategory || 'Không xác định';
+        document.getElementById('courseDetailRequired').innerHTML = courseRequired 
+            ? '<span class="badge badge-required">Bắt buộc</span>' 
+            : '<span class="badge badge-elective">Tự chọn</span>';
+        document.getElementById('courseDetailDescription').textContent = courseDescription || 'Chưa có mô tả';
+
+        const modal = new bootstrap.Modal(document.getElementById('courseDetailModal'));
+        modal.show();
+    });
+});
+</script>
+{% endblock %}

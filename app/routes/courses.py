@@ -106,6 +106,17 @@ def edit_course(course_id):
     return render_template('courses/form.html', course=course)
 
 
+@courses_bp.route('/courses/<int:course_id>')
+def course_detail(course_id):
+    course = Course.query.get_or_404(course_id)
+    program_courses = (
+        Course.query.filter_by(id=course_id)
+        .first()
+        .program_courses
+    )
+    return render_template('courses/detail.html', course=course, program_courses=program_courses)
+
+
 @courses_bp.route('/courses/<int:course_id>/delete', methods=['POST'])
 @login_required
 def delete_course(course_id):

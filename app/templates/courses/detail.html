@@ -1,0 +1,105 @@
+{% extends 'base.html' %} 
+{% block title %}Chi tiết: {{ course.name }}{% endblock %} 
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>{{ course.name }}</h2>
+        <p class="text-muted mb-0">
+            <strong>Mã HP:</strong> {{ course.course_code }}
+        </p>
+    </div>
+    <div>
+        <a href="{{ url_for('courses.list_courses') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Quay lại
+        </a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('courses.edit_course', course_id=course.id) }}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Sửa
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-info-circle"></i> Thông tin cơ bản</h5>
+                <table class="table table-sm">
+                    <tr>
+                        <td class="fw-bold">Mã HP:</td>
+                        <td>{{ course.course_code }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Tên:</td>
+                        <td>{{ course.name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Tín chỉ:</td>
+                        <td>{{ course.credits }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Loại:</td>
+                        <td>{{ course.category or 'Không xác định' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Bắt buộc:</td>
+                        <td>
+                            {% if course.is_required %}
+                                <span class="badge badge-required">Bắt buộc</span>
+                            {% else %}
+                                <span class="badge badge-elective">Tự chọn</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-file-text"></i> Mô tả</h5>
+                <p>{{ course.description or 'Chưa có mô tả' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if program_courses %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title"><i class="bi bi-bookmark"></i> Xuất hiện trong chương trình</h5>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Chương trình đào tạo</th>
+                        <th class="text-center">Học kỳ</th>
+                        <th class="text-center">Thứ tự</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pc in program_courses %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('programs.program_detail', program_id=pc.program.id) }}">
+                                {{ pc.program.name }}
+                            </a>
+                        </td>
+                        <td class="text-center">{{ pc.semester }}</td>
+                        <td class="text-center">{{ pc.sort_order }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i> Học phần này chưa được thêm vào chương trình đào tạo nào.
+</div>
+{% endif %}
+{% endblock %}
